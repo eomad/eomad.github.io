@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css" rel="stylesheet" />
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
 </head>
 
 <body>
@@ -60,14 +61,13 @@
       Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
   </section>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"
-    type="text/javascript"></script>
   <script src="assets/js/parallax.js" type="text/javascript"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script>
+
     var bounds = [
-      [18.010212, 59.290591], // Southwest coordinates
-      [18.110212, 59.370591] // Northeast coordinates
+      [17.960212, 59.250591], // Southwest coordinates
+      [18.160212, 59.400591] // Northeast coordinates
     ];
 
     mapboxgl.accessToken = "pk.eyJ1IjoiZ2FicnVvbWFkIiwiYSI6ImNrN3h4MjdvaDAweWszZm5zNWV6dThoMXMifQ.GUn7qkMtFtwyPJD-PCosGg";
@@ -79,6 +79,92 @@
       maxBounds: bounds,
       zoom: 11.98
     });
+
+    map.on('load', function () {
+
+      // var riskURL = "https://github.com/eomad/eomad.github.io/blob/master/data/riskgroup.json";
+      // $.getJSON(riskURL, function (json) {
+      //   console.log(json);
+      // });
+
+
+      map.addSource('risk', {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': [
+            {
+              "type": "Feature",
+              "properties": {
+                "icon": "Heartbeat-2",
+                "id": "Rikard15845638093498",
+                "upload_date": 1584563809,
+                "name": "Rikard",
+                "phone": "07093498",
+                "email": "rikki@hotmail.com",
+                "address": "Johannes plan 1, Stockholm 111 38, Sweden"
+              },
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  18.064479,
+                  59.337617
+                ]
+              }
+            }
+          ]
+        }
+      });
+      // Add a layer showing the riskgroups.
+      map.addLayer({
+        'id': 'risk',
+        'type': 'symbol',
+        'source': 'risk',
+        'layout': {
+          'icon-image': '{icon}',
+          'icon-allow-overlap': true
+        }
+      });
+
+
+    });
+    // Create a popup, but don't add it to the map yet.
+    var popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+
+    map.on('mouseenter', 'risk', function (e) {
+      // Change the cursor style as a UI indicator.
+      map.getCanvas().style.cursor = 'pointer';
+
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      var name = e.features[0].properties.name;
+      var phone = e.features[0].properties.phone;
+      var email = e.features[0].properties.email;
+      var description = '<h>' + name + '</h><p>Tel: ' + phone + '<br></br>Email:' + email + '</p>'
+
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears
+      // over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      // Populate the popup and set its coordinates
+      // based on the feature found.
+      popup
+        .setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+    });
+
+    map.on('mouseleave', 'risk', function () {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+    });
+
+
   </script>
 </body>
 
