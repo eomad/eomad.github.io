@@ -15,7 +15,7 @@
   <!-- Hero header -->
   <header>
     <div class="hero-wrapper">
-      <div style="padding-bottom: 5%;text-align: center;">
+      <div style="padding-bottom: 4%;text-align: center;">
         <h1>Hjälp till Riskgrupper</h1>
       </div>
       <div id="map" class="hero"></div>
@@ -62,6 +62,7 @@
   </section>
 
   <script src="assets/js/parallax.js" type="text/javascript"></script>
+  <script src="https://d3js.org/d3.v5.js"></script>
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script>
 
@@ -82,48 +83,27 @@
 
     map.on('load', function () {
 
-      // var riskURL = "https://github.com/eomad/eomad.github.io/blob/master/data/riskgroup.json";
-      // $.getJSON(riskURL, function (json) {
-      //   console.log(json);
-      // });
+      var riskURL = "https://eomad.github.io/data/riskgroup.json";
+      $.getJSON(riskURL, function (json) {
 
 
-      map.addSource('risk', {
-        'type': 'geojson',
-        'data': {
-          'type': 'FeatureCollection',
-          'features': [
-            {
-              "type": "Feature",
-              "properties": {
-                "icon": "Heartbeat-2",
-                "id": "Rikard15845638093498",
-                "upload_date": 1584563809,
-                "name": "Rikard",
-                "phone": "07093498",
-                "email": "rikki@hotmail.com",
-                "address": "Johannes plan 1, Stockholm 111 38, Sweden"
-              },
-              "geometry": {
-                "type": "Point",
-                "coordinates": [
-                  18.064479,
-                  59.337617
-                ]
-              }
-            }
-          ]
-        }
-      });
-      // Add a layer showing the riskgroups.
-      map.addLayer({
-        'id': 'risk',
-        'type': 'symbol',
-        'source': 'risk',
-        'layout': {
-          'icon-image': '{icon}',
-          'icon-allow-overlap': true
-        }
+        map.addSource('risk', {
+          'type': 'geojson',
+          'data': {
+            'type': 'FeatureCollection',
+            'features': json
+          }
+        });
+        // Add a layer showing the riskgroups.
+        map.addLayer({
+          'id': 'risk',
+          'type': 'symbol',
+          'source': 'risk',
+          'layout': {
+            'icon-image': '{icon}',
+            'icon-allow-overlap': true
+          }
+        });
       });
 
 
