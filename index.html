@@ -83,48 +83,29 @@
 
     map.on('load', function () {
 
-      var riskURL = "https://eomad.github.io/data/riskgroup.json";
-      $.getJSON(riskURL, function (json) {
-        map.addSource('risk', {
-          'type': 'geojson',
-          'data': {
-            'type': 'FeatureCollection',
-            'features': json
-          }
-        });
-        // Add a layer showing the riskgroups.
-        map.addLayer({
-          'id': 'risk',
-          'type': 'symbol',
-          'source': 'risk',
-          'layout': {
-            'icon-image': 'Heartbeat-2',
-            'icon-allow-overlap': false
-          }
-        });
-      });
-
-      var volunteersURL = "https://eomad.github.io/data/volunteers.json";
+      // Add a layer showing the riskgroups.
+      var volunteersURL = "https://eomad.github.io/data.json";
       $.getJSON(volunteersURL, function (json) {
-        map.addSource('volunteers', {
+        map.addSource('points', {
           'type': 'geojson',
           'data': {
             'type': 'FeatureCollection',
             'features': json
           }
         });
-        // Add a layer showing the riskgroups.
         map.addLayer({
-          'id': 'volunteers',
+          'id': 'points',
           'type': 'symbol',
-          'source': 'volunteers',
+          'source': 'points',
           'layout': {
-            'icon-image': 'Hand',
+            'icon-image': '{icon}',
             'icon-allow-overlap': false
           }
         });
       });
 
+      map.scrollZoom.disable();
+      map.addControl(new mapboxgl.FullscreenControl());
 
     });
     // Create a popup, but don't add it to the map yet.
@@ -133,7 +114,7 @@
       closeOnClick: false
     });
 
-    map.on('mouseenter', 'risk', function (e) {
+    map.on('mouseenter', 'points', function (e) {
       // Change the cursor style as a UI indicator.
       map.getCanvas().style.cursor = 'pointer';
 
@@ -158,41 +139,10 @@
         .addTo(map);
     });
 
-    map.on('mouseenter', 'volunteers', function (e) {
-      // Change the cursor style as a UI indicator.
-      map.getCanvas().style.cursor = 'pointer';
-
-      var coordinates = e.features[0].geometry.coordinates.slice();
-      var name = e.features[0].properties.name;
-      var phone = e.features[0].properties.phone;
-      var email = e.features[0].properties.email;
-      var description = '<h>' + name + '</h><p>Tel: ' + phone + '<br></br>Email:' + email + '</p>'
-
-      // Ensure that if the map is zoomed out such that multiple
-      // copies of the feature are visible, the popup appears
-      // over the copy being pointed to.
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-
-      // Populate the popup and set its coordinates
-      // based on the feature found.
-      popup
-        .setLngLat(coordinates)
-        .setHTML(description)
-        .addTo(map);
-    });
-
-    map.on('mouseleave', 'risk', function () {
+    map.on('mouseleave', 'points', function () {
       map.getCanvas().style.cursor = '';
       popup.remove();
     });
-
-    map.on('mouseleave', 'volunteers', function () {
-      map.getCanvas().style.cursor = '';
-      popup.remove();
-    });
-
 
   </script>
 </body>
